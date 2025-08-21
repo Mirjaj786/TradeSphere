@@ -15,8 +15,8 @@ export default function Flash({ success = "", error = "", duration = 3000 }) {
 
   const isSuccess = Boolean(success);
   const message = isSuccess ? success : error;
-  const bg = isSuccess ? "#16a34a" : "#dc2626";
-  const border = isSuccess ? "#14532d" : "#7f1d1d";
+  // const bg = isSuccess ? "#16a34a" : "#dc2626";
+  // const border = isSuccess ? "#14532d" : "#7f1d1d";
 
   return (
     <div role="status" aria-live="polite" className="flash-container">
