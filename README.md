@@ -28,5 +28,5 @@ This project mimics the look and feel of the Zerodha platform, focusing on a cle
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/zerodha-dashboard.git
+git clone https://github.com/Mirjaj786/TradeSphere.git
 cd zerodha-dashboard
