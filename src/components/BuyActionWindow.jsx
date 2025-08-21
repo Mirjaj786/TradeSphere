@@ -25,7 +25,7 @@ const BuyActionWindow = ({ uid }) => {
       })
       .then((res) => {
         console.log("Order placed:", res.data);
-        alert("Order placed successfully");
+        localStorage.setItem("flash_success", "Order placed successfully");
         closeBuyWindow();
       })
       .catch((err) => {

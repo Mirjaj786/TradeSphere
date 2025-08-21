@@ -95,6 +95,7 @@ const Menu = () => {
               </div>
               <div className="profile-card-footer">
                 <button className="logout-btn" onClick={handleLogout}>Logout</button>
+                <button>Support</button>
               </div>
             </div>
           )}
