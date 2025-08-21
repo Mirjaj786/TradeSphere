@@ -1,16 +1,56 @@
 import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-const Summary = () => {
+import { useFlash } from "./Home";
 
-  const [user, setUser] = useState(null);
+const Summary = () => {
+  const [user, setUser] = useState(() => {
+    try {
+      const cached = localStorage.getItem("user");
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(true);
+  const { showFlash } = useFlash();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3002/auth/me", { withCredentials: true })
-      .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null));
-  }, []);
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:3002/auth/me", { 
+          withCredentials: true 
+        });
+        if (res.data.user) {
+          setUser(res.data.user);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+        } else {
+          showFlash('error', 'User data not found');
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        if (error.response?.status === 401) {
+          showFlash('error', 'Please login again');
+        } else {
+          showFlash('error', 'Failed to load user data');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUser();
+  }, [showFlash]);
+
+  if (loading && !user) {
+    return (
+      <div className="username">
+        <h6>Loading...</h6>
+        <hr className="divider" />
+      </div>
+    );
+  }
 
   return (
     <>

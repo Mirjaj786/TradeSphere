@@ -2,12 +2,14 @@ import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useFlash } from "./Home";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { showFlash } = useFlash();
 
   const handleProfileClick = (index) => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -19,10 +21,21 @@ const Menu = () => {
   };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3002/auth/me", { withCredentials: true })
-      .then((res) => setCurrentUser(res.data.user))
-      .catch(() => setCurrentUser(null));
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:3002/auth/me", { 
+          withCredentials: true 
+        });
+        if (res.data.user) {
+          setCurrentUser(res.data.user);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setCurrentUser(null);
+      }
+    };
+    
+    fetchUser();
   }, []);
 
   const handleLogout = async () => {
@@ -33,10 +46,13 @@ const Menu = () => {
         { withCredentials: true }
       );
       setCurrentUser(null);
-      localStorage.setItem("flash_success", "Logged out successfully");
-      window.location.href = "http://localhost:3000/signin";
+      showFlash('success', 'Logged out successfully');
+      setTimeout(() => {
+        window.location.href = "http://localhost:3000/signin";
+      }, 1000);
     } catch (err) {
       console.error("Logout failed", err);
+      showFlash('error', 'Logout failed. Please try again.');
     }
   };
 
@@ -95,7 +111,6 @@ const Menu = () => {
               </div>
               <div className="profile-card-footer">
                 <button className="logout-btn" onClick={handleLogout}>Logout</button>
-                <button>Support</button>
               </div>
             </div>
           )}
