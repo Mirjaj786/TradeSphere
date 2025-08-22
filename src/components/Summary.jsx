@@ -64,7 +64,7 @@ const Summary = () => {
       <div className="username">
         <h6>You are not logged in</h6>
         <button
-          onClick={() => (window.location.href = "/login")}
+          onClick={() => (window.location.href = "http://localhost:3002/auth/login")}
           className="btn btn-primary"
         >
           Login
