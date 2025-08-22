@@ -3,20 +3,46 @@ import axios from "axios";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3002/orders")
-      .then((res) => setOrders(res.data))
-      .catch((err) => console.error("Failed to fetch orders", err));
+    let isMounted = true;
+
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get("http://localhost:3002/orders");
+        if (isMounted) setOrders(res.data);
+        console.log("Orders fetched:", res.data);
+      } catch (err) {
+        console.error("Failed to fetch orders:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchOrders();
+
+    return () => {
+      isMounted = false; // cleanup flag
+    };
   }, []);
+
+  if (loading) {
+    return (
+      <div className="orders">
+        <p>Loading orders...</p>
+      </div>
+    );
+  }
 
   if (!orders.length) {
     return (
       <div className="orders">
         <div className="no-orders">
           <p>You haven't placed any orders today</p>
-          <a href="/" className="btn">Get started</a>
+          <a href="/" className="btn">
+            Get started
+          </a>
         </div>
       </div>
     );

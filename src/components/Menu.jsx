@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useFlash } from "./Home";
@@ -7,11 +6,11 @@ import { useFlash } from "./Home";
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { showFlash } = useFlash();
 
-  const handleProfileClick = (index) => {
+  const handleProfileClick = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
@@ -20,22 +19,24 @@ const Menu = () => {
     setIsProfileDropdownOpen(false);
   };
 
+  // Fetch current logged-in user
   useEffect(() => {
+    let isMounted = true;
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:3002/auth/me", { 
-          withCredentials: true 
+        const res = await axios.get("http://localhost:3002/auth/me", {
+          withCredentials: true,
         });
-        if (res.data.user) {
-          setCurrentUser(res.data.user);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-        setCurrentUser(null);
+        if (isMounted) setUser(res.data.user);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        if (isMounted) setUser(null);
       }
     };
-    
     fetchUser();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -45,14 +46,14 @@ const Menu = () => {
         {},
         { withCredentials: true }
       );
-      setCurrentUser(null);
-      showFlash('success', 'Logged out successfully');
+      localStorage.removeItem("user");
+      showFlash("success", "Logged out successfully");
       setTimeout(() => {
         window.location.href = "http://localhost:3000/signin";
       }, 1000);
     } catch (err) {
       console.error("Logout failed", err);
-      showFlash('error', 'Logout failed. Please try again.');
+      showFlash("error", "Logout failed. Please try again.");
     }
   };
 
@@ -98,19 +99,29 @@ const Menu = () => {
         </button>
         <hr />
         <div className="profile" onClick={handleProfileClick}>
-          <div className="avatar small">{(currentUser?.username || "").slice(0, 2).toUpperCase() || "ZU"}</div>
-          <p className="username">{currentUser?.username || "USERID"}</p>
+          <div className="avatar small">
+            {user?.username
+              ? user.username.slice(0, 2).toUpperCase()
+              : "ZU"}
+          </div>
+          <p className="username">{user?.username || "Guest"}</p>
           {isProfileDropdownOpen && (
             <div className="profile-card">
               <div className="profile-card-header">
-                <div className="avatar large">{(currentUser?.username || "").slice(0, 2).toUpperCase() || "ZU"}</div>
+                <div className="avatar large">
+                  {user?.username
+                    ? user.username.slice(0, 2).toUpperCase()
+                    : "ZU"}
+                </div>
                 <div className="profile-card-info">
-                  <div className="name">{currentUser?.username || "Guest"}</div>
-                  <div className="email">{currentUser?.email || ""}</div>
+                  <div className="name">{user?.username || "Guest"}</div>
+                  <div className="email">{user?.email || ""}</div>
                 </div>
               </div>
               <div className="profile-card-footer">
-                <button className="logout-btn" onClick={handleLogout}>Logout</button>
+                <button className="logout-btn" onClick={handleLogout}>
+                  Logout
+                </button>
               </div>
             </div>
           )}
