@@ -6,14 +6,17 @@ const Positions = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true; // cleanup flag
 
     const fetchPositions = async () => {
       try {
-        const res = await axios.get("http://localhost:3002/addpositions", {
-          withCredentials: true,
+        const res = await axios.get("http://localhost:3002/allpositions", {
+          withCredentials: true, // required for session cookies
         });
-        if (isMounted) setPositionData(res.data);
+
+        if (isMounted) {
+          setPositionData(res.data.positions || []); // safe fallback
+        }
         console.log("Fetched positions:", res.data);
       } catch (err) {
         console.error("Failed to fetch positions:", err);
@@ -25,17 +28,12 @@ const Positions = () => {
     fetchPositions();
 
     return () => {
-      isMounted = false;
+      isMounted = false; // cleanup
     };
   }, []);
 
-  if (loading) {
-    return <p>Loading positions...</p>;
-  }
-
-  if (!positionData.length) {
-    return <p>No positions available.</p>;
-  }
+  if (loading) return <p>Loading positions...</p>;
+  if (!positionData.length) return <p>No positions available.</p>;
 
   return (
     <>
@@ -57,7 +55,7 @@ const Positions = () => {
           <tbody>
             {positionData.map((stock, index) => {
               const curValue = stock.price * stock.qty;
-              const isProfit = curValue - stock.avg * stock.qty >= 0.0;
+              const isProfit = curValue - stock.avg * stock.qty >= 0;
               const profClass = isProfit ? "profit" : "loss";
               const dayClass = stock.isLoss ? "loss" : "profit";
 

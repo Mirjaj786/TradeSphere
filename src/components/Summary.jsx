@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { useFlash } from "./Home";
+
+// Use environment variable or default to localhost:3002
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3002";
 
 const Summary = () => {
   const [user, setUser] = useState(() => {
@@ -12,43 +15,73 @@ const Summary = () => {
     }
   });
   const [loading, setLoading] = useState(true);
+  const [connectionError, setConnectionError] = useState(false);
   const { showFlash } = useFlash();
   const fetchingRef = useRef(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (fetchingRef.current) return;
-      fetchingRef.current = true;
+  const fetchUser = useCallback(async () => {
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
 
-      try {
-        setLoading(true);
-        const res = await axios.get("http://localhost:3002/auth/me", {
-          withCredentials: true,
-        });
+    try {
+      setLoading(true);
+      setConnectionError(false);
+      
+      console.log(`Attempting to fetch user from: ${API_BASE_URL}/auth/me`);
+      
+      const res = await axios.get(`${API_BASE_URL}/auth/me`, {
+        withCredentials: true,
+        timeout: 5000, // 5 second timeout
+      });
 
-        if (res.data?.user) {
-          setUser(res.data.user);
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-          showFlash("success", `Welcome back, ${res.data.user.username}!`);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        if (error.response?.status === 401) {
-          setUser(null); // user not logged in
-        } else {
-          console.error("Failed to fetch user:", error);
-          showFlash("error", "Failed to load user data");
-        }
-      } finally {
-        setLoading(false);
-        fetchingRef.current = false;
+      if (res.data?.user) {
+        setUser(res.data.user);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        showFlash("success", `Welcome back, ${res.data.user.username}!`);
+      } else {
+        setUser(null);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+      
+      if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+        setConnectionError(true);
+        showFlash("error", "Cannot connect to server. Please check if the backend is running.");
+      } else if (error.response?.status === 401) {
+        setUser(null); // user not logged in
+      } else {
+        showFlash("error", "Failed to load user data");
+      }
+    } finally {
+      setLoading(false);
+      fetchingRef.current = false;
+    }
+  }, [showFlash]);
 
+  useEffect(() => {
     fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // removed showFlash from deps to prevent unnecessary loops
+  }, [fetchUser]);
+
+  const handleLoginRedirect = () => {
+    window.location.href = `http://localhost:3000/signin`;
+  };
+
+  const handleRetry = () => {
+    fetchUser();
+  };
+
+  if (connectionError) {
+    return (
+      <div className="username">
+        <h6>Connection Error</h6>
+        <p>Cannot connect to the server at {API_BASE_URL}</p>
+        <button onClick={handleRetry} className="btn btn-primary">
+          Retry Connection
+        </button>
+        <hr className="divider" />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -64,7 +97,7 @@ const Summary = () => {
       <div className="username">
         <h6>You are not logged in</h6>
         <button
-          onClick={() => (window.location.href = "http://localhost:3002/auth/login")}
+          onClick={handleLoginRedirect}
           className="btn btn-primary"
         >
           Login
@@ -134,4 +167,4 @@ const Summary = () => {
   );
 };
 
-export default Summary;
+export default React.memo(Summary);

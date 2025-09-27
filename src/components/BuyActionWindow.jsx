@@ -95,7 +95,7 @@ const BuyActionWindow = ({ uid }) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3002/neworders", {
+      const res = await axios.post("http://localhost:3002/newOrder", {
         name: uid,
         qty: quantity,
         price: price,

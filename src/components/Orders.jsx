@@ -11,7 +11,10 @@ const Orders = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get("http://localhost:3002/orders");
-        if (isMounted) setOrders(res.data);
+        if (isMounted) {
+          // Set orders array safely
+          setOrders(res.data.orders || []);
+        }
         console.log("Orders fetched:", res.data);
       } catch (err) {
         console.error("Failed to fetch orders:", err);
@@ -23,7 +26,7 @@ const Orders = () => {
     fetchOrders();
 
     return () => {
-      isMounted = false; // cleanup flag
+      isMounted = false; // cleanup
     };
   }, []);
 

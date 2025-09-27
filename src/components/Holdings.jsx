@@ -7,9 +7,11 @@ const Holdings = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3002/allholdings") // ✅ fixed typo
+      .get("http://localhost:3002/allholdings")
       .then((res) => {
-        setAllHoldings(res.data);
+        console.log(res.data);
+        // Make sure we set the array, not the object
+        setAllHoldings(res.data.holdings || []);
       })
       .catch((err) => {
         console.error("Failed to fetch holdings:", err);
@@ -30,7 +32,7 @@ const Holdings = () => {
     ],
   };
 
-  // ✅ Calculate totals dynamically
+  //  Calculate totals dynamically
   const totalInvestment = allHoldings.reduce(
     (sum, stock) => sum + stock.avg * stock.qty,
     0
@@ -89,21 +91,15 @@ const Holdings = () => {
 
       <div className="row">
         <div className="col">
-          <h5>
-            {totalInvestment.toFixed(2)}
-          </h5>
+          <h5>{totalInvestment.toFixed(2)}</h5>
           <p>Total investment</p>
         </div>
         <div className="col">
-          <h5>
-            {currentValue.toFixed(2)}
-          </h5>
+          <h5>{currentValue.toFixed(2)}</h5>
           <p>Current value</p>
         </div>
         <div className="col">
-          <h5
-            className={profitLoss >= 0 ? "profit" : "loss"}
-          >
+          <h5 className={profitLoss >= 0 ? "profit" : "loss"}>
             {profitLoss.toFixed(2)} ({profitLossPercent.toFixed(2)}%)
           </h5>
           <p>P&L</p>

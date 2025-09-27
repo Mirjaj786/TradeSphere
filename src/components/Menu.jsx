@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useFlash } from "./Home";
+
+const API_BASE_URL = "http://localhost:3002";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
@@ -9,47 +11,67 @@ const Menu = () => {
   const [user, setUser] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { showFlash } = useFlash();
+  const location = useLocation();
 
-  const handleProfileClick = () => {
-    setIsProfileDropdownOpen(!isProfileDropdownOpen);
-  };
+  // Use useMemo to prevent recreation on every render
+  const menuItems = useMemo(() => [
+    { label: "Dashboard", to: "/" },
+    { label: "Orders", to: "/orders" },
+    { label: "Holdings", to: "/holdings" },
+    { label: "Positions", to: "/positions" },
+    { label: "Funds", to: "/funds" },
+    { label: "Apps", to: "/apps" },
+  ], []); // Empty dependency array means this only gets created once
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-    setIsProfileDropdownOpen(false);
-  };
-
-  // Fetch current logged-in user
+  // Auto-select menu based on current route
   useEffect(() => {
-    let isMounted = true;
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get("http://localhost:3002/auth/me", {
-          withCredentials: true,
-        });
-        if (isMounted) setUser(res.data.user);
-      } catch (err) {
-        console.error("Error fetching user:", err);
-        if (isMounted) setUser(null);
-      }
-    };
-    fetchUser();
-    return () => {
-      isMounted = false;
-    };
+    const currentIndex = menuItems.findIndex(item => item.to === location.pathname);
+    if (currentIndex !== -1) {
+      setSelectedMenu(currentIndex);
+    }
+  }, [location.pathname, menuItems]); // Now menuItems is stable between renders
+
+  const toggleProfileDropdown = useCallback(() => {
+    setIsProfileDropdownOpen(prev => !prev);
   }, []);
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev);
+    setIsProfileDropdownOpen(false);
+  }, []);
+
+  const fetchUser = useCallback(async () => {
+    try {
+      const res = await axios.get(` http://localhost:3002/auth/me`, {
+        withCredentials: true,
+      });
+      setUser(res.data.user);
+    } catch (err) {
+      console.error("Error fetching user:", err);
+      setUser(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:3002/auth/logout",
+        `${API_BASE_URL}/auth/logout`,
         {},
         { withCredentials: true }
       );
-      localStorage.removeItem("user");
+      setUser(null);
+      try {
+        localStorage.removeItem("user");
+      } catch (e) {
+        // Silent fail for localStorage
+      }
       showFlash("success", "Logged out successfully");
       setTimeout(() => {
-        window.location.href = "http://localhost:3000/signin";
+        window.location.href = `http://localhost:3000/signin`;
       }, 1000);
     } catch (err) {
       console.error("Logout failed", err);
@@ -60,18 +82,14 @@ const Menu = () => {
   const menuClass = "menu";
   const activeMenuClass = "menu selected";
 
-  const menuItems = [
-    { label: "Dashboard", to: "/" },
-    { label: "Orders", to: "/orders" },
-    { label: "Holdings", to: "/holdings" },
-    { label: "Positions", to: "/positions" },
-    { label: "Funds", to: "/funds" },
-    { label: "Apps", to: "/apps" },
-  ];
+  const userInitials = user?.username 
+    ? user.username.slice(0, 2).toUpperCase() 
+    : "ZU";
 
   return (
     <div className="menu-container">
       <img src="logo.png" alt="Logo" style={{ width: "50px" }} />
+
       <div className="menus">
         <ul>
           {menuItems.map((item, idx) => (
@@ -88,30 +106,32 @@ const Menu = () => {
             </li>
           ))}
         </ul>
+
         <button
           className={`hamburger ${isMobileMenuOpen ? "open" : ""}`}
-          aria-label="Open menu"
+          aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
           onClick={toggleMobileMenu}
         >
           <span className="bar"></span>
           <span className="bar"></span>
           <span className="bar"></span>
         </button>
+
         <hr />
-        <div className="profile" onClick={handleProfileClick}>
+
+        {/* Profile */}
+        <div className="profile" onClick={toggleProfileDropdown}>
           <div className="avatar small">
-            {user?.username
-              ? user.username.slice(0, 2).toUpperCase()
-              : "ZU"}
+            {userInitials}
           </div>
-          <p className="username">{user?.username || "Guest"}</p>
+          <p className="username">{user?.username || "USERID"}</p>
+
           {isProfileDropdownOpen && (
             <div className="profile-card">
               <div className="profile-card-header">
                 <div className="avatar large">
-                  {user?.username
-                    ? user.username.slice(0, 2).toUpperCase()
-                    : "ZU"}
+                  {userInitials}
                 </div>
                 <div className="profile-card-info">
                   <div className="name">{user?.username || "Guest"}</div>
@@ -126,6 +146,8 @@ const Menu = () => {
             </div>
           )}
         </div>
+
+        {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="mobile-menu">
             {menuItems.map((item, idx) => (
@@ -148,4 +170,4 @@ const Menu = () => {
   );
 };
 
-export default Menu;
+export default React.memo(Menu);
