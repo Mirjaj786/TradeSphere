@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -19,7 +19,7 @@ body {
 .flash-message {
   position: relative;
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   padding: 14px 20px;
   margin: 0 auto;
   min-width: 280px;
@@ -29,8 +29,14 @@ body {
   border: 1px solid transparent;
   pointer-events: auto;
 }
-.flash-success { background: #16a34a; border-color: #14532d; }
-.flash-error   { background: #dc2626; border-color: #7f1d1d; }
+.flash-success {
+  background: #16a34a;
+  border-color: #14532d;
+}
+.flash-error {
+  background: #dc2626;
+  border-color: #7f1d1d;
+}
 .flash-close {
   position: absolute;
   top: 4px;
@@ -44,7 +50,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -331,7 +337,9 @@ code {
   height: 2px;
   background: #333;
 }
-.hamburger.open .bar:nth-child(2) { opacity: 0.6; }
+.hamburger.open .bar:nth-child(2) {
+  opacity: 0.6;
+}
 
 .menu {
   font-size: 0.8rem;
@@ -372,8 +380,15 @@ hr {
   margin-right: 8px;
 }
 
-.avatar.small { width: 30px; height: 30px; }
-.avatar.large { width: 42px; height: 42px; font-size: 0.9rem; }
+.avatar.small {
+  width: 30px;
+  height: 30px;
+}
+.avatar.large {
+  width: 42px;
+  height: 42px;
+  font-size: 0.9rem;
+}
 
 .profile .username {
   font-size: 0.8rem;
@@ -403,7 +418,7 @@ hr {
   width: 260px;
   background: #fff;
   border: 1px solid #eaeaea;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   border-radius: 6px;
   padding: 12px;
   z-index: 10;
@@ -439,7 +454,9 @@ hr {
   text-align: left;
   cursor: pointer;
 }
-.logout-btn:hover { background: #f9f9f9; }
+.logout-btn:hover {
+  background: #f9f9f9;
+}
 
 .orders {
   width: 100%;
@@ -510,11 +527,11 @@ hr {
 }
 
 .order-table tr td:first-child p {
-    background: rgb(255, 197, 197);
-    color: rgb(233, 120, 120);
-    width: 50%;
-    text-align: center;
-    border-radius: 2px;
+  background: rgb(255, 197, 197);
+  color: rgb(233, 120, 120);
+  width: 50%;
+  text-align: center;
+  border-radius: 2px;
 }
 
 .order-table tr td:last-child {
@@ -959,36 +976,76 @@ hr {
     height: auto;
   }
 
-  .menu-container { flex-basis: 100%; }
-  .menus { justify-content: space-between; width: 100%; }
-  .menus li { margin-right: 18px; }
-  .menu { font-size: 0.9rem; }
+  .menu-container {
+    flex-basis: 100%;
+  }
+  .menus {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .menus li {
+    margin-right: 18px;
+  }
+  .menu {
+    font-size: 0.9rem;
+  }
 
-  .indices-container { padding: 8px 12px; }
+  .indices-container {
+    padding: 8px 12px;
+  }
 }
 
 /* Tablet portrait and large phones */
 @media (max-width: 768px) {
-  .topbar-container { height: auto; }
+  .topbar-container {
+    height: auto;
+  }
 
-  .indices-container { display: none; }
+  .indices-container {
+    display: none;
+  }
 
-  .menu-container { padding: 10px 12px; position: relative; }
+  .menu-container {
+    padding: 10px 12px;
+    position: relative;
+  }
 
-  .menus { width: 100%; justify-content: flex-start; gap: 8px; }
-  .menus ul { display: none; }
-  .hamburger { display: inline-flex; }
-  .menus li { margin-right: 0; }
-  .menus hr { display: none; }
+  .menus {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .menus ul {
+    display: none;
+  }
+  .hamburger {
+    display: inline-flex;
+  }
+  .menus li {
+    margin-right: 0;
+  }
+  .menus hr {
+    display: none;
+  }
 
-  .profile { margin-left: 10px; }
-  .profile .username { display: none; }
+  .profile {
+    margin-left: 10px;
+  }
+  .profile .username {
+    display: none;
+  }
 
-  .username h6 { font-size: 1.2rem; }
+  .username h6 {
+    font-size: 1.2rem;
+  }
 
-  .data { width: 100%; }
+  .data {
+    width: 100%;
+  }
 
-  .order-table { overflow-x: auto; }
+  .order-table {
+    overflow-x: auto;
+  }
 
   .watchlist-number {
     width: 100%;
@@ -1009,7 +1066,7 @@ hr {
     flex-direction: column;
     background: #fff;
     border-top: 1px solid #eee;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     z-index: 10;
   }
   .mobile-menu-item {
@@ -1018,20 +1075,44 @@ hr {
     color: #333;
     text-decoration: none;
   }
-  .mobile-menu-item:hover { background: #fafafa; }
+  .mobile-menu-item:hover {
+    background: #fafafa;
+  }
 }
 
 /* Small phones */
 @media (max-width: 480px) {
-  .menu { font-size: 0.8rem; }
-  .index, .index-points, .percent { font-size: 0.75rem; }
+  .menu {
+    font-size: 0.8rem;
+  }
+  .index,
+  .index-points,
+  .percent {
+    font-size: 0.75rem;
+  }
 
-  .profile .avatar.small { width: 28px; height: 28px; }
-  .avatar.large { width: 38px; height: 38px; }
+  .profile .avatar.small {
+    width: 28px;
+    height: 28px;
+  }
+  .avatar.large {
+    width: 38px;
+    height: 38px;
+  }
 
-  .table { padding: 16px; }
-  .row { flex-direction: column; gap: 16px; }
-  .col { flex-basis: 100%; }
+  .table {
+    padding: 16px;
+  }
+  .row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .col {
+    flex-basis: 100%;
+  }
 
-  .search { font-size: 0.85rem; padding: 12px 14px; }
+  .search {
+    font-size: 0.85rem;
+    padding: 12px 14px;
+  }
 }

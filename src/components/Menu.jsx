@@ -14,29 +14,34 @@ const Menu = () => {
   const location = useLocation();
 
   // Use useMemo to prevent recreation on every render
-  const menuItems = useMemo(() => [
-    { label: "Dashboard", to: "/" },
-    { label: "Orders", to: "/orders" },
-    { label: "Holdings", to: "/holdings" },
-    { label: "Positions", to: "/positions" },
-    { label: "Funds", to: "/funds" },
-    { label: "Apps", to: "/apps" },
-  ], []); // Empty dependency array means this only gets created once
+  const menuItems = useMemo(
+    () => [
+      { label: "Dashboard", to: "/" },
+      { label: "Orders", to: "/orders" },
+      { label: "Holdings", to: "/holdings" },
+      { label: "Positions", to: "/positions" },
+      { label: "Funds", to: "/funds" },
+      { label: "Apps", to: "/apps" },
+    ],
+    []
+  ); // Empty dependency array means this only gets created once
 
   // Auto-select menu based on current route
   useEffect(() => {
-    const currentIndex = menuItems.findIndex(item => item.to === location.pathname);
+    const currentIndex = menuItems.findIndex(
+      (item) => item.to === location.pathname
+    );
     if (currentIndex !== -1) {
       setSelectedMenu(currentIndex);
     }
   }, [location.pathname, menuItems]); // Now menuItems is stable between renders
 
   const toggleProfileDropdown = useCallback(() => {
-    setIsProfileDropdownOpen(prev => !prev);
+    setIsProfileDropdownOpen((prev) => !prev);
   }, []);
 
   const toggleMobileMenu = useCallback(() => {
-    setIsMobileMenuOpen(prev => !prev);
+    setIsMobileMenuOpen((prev) => !prev);
     setIsProfileDropdownOpen(false);
   }, []);
 
@@ -82,8 +87,8 @@ const Menu = () => {
   const menuClass = "menu";
   const activeMenuClass = "menu selected";
 
-  const userInitials = user?.username 
-    ? user.username.slice(0, 2).toUpperCase() 
+  const userInitials = user?.username
+    ? user.username.slice(0, 2).toUpperCase()
     : "ZU";
 
   return (
@@ -99,7 +104,9 @@ const Menu = () => {
                 to={item.to}
                 onClick={() => setSelectedMenu(idx)}
               >
-                <p className={selectedMenu === idx ? activeMenuClass : menuClass}>
+                <p
+                  className={selectedMenu === idx ? activeMenuClass : menuClass}
+                >
                   {item.label}
                 </p>
               </Link>
@@ -122,17 +129,13 @@ const Menu = () => {
 
         {/* Profile */}
         <div className="profile" onClick={toggleProfileDropdown}>
-          <div className="avatar small">
-            {userInitials}
-          </div>
+          <div className="avatar small">{userInitials}</div>
           <p className="username">{user?.username || "USERID"}</p>
 
           {isProfileDropdownOpen && (
             <div className="profile-card">
               <div className="profile-card-header">
-                <div className="avatar large">
-                  {userInitials}
-                </div>
+                <div className="avatar large">{userInitials}</div>
                 <div className="profile-card-info">
                   <div className="name">{user?.username || "Guest"}</div>
                   <div className="email">{user?.email || ""}</div>

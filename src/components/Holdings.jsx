@@ -10,7 +10,7 @@ const Holdings = () => {
       .get("http://localhost:3002/allholdings")
       .then((res) => {
         console.log(res.data);
-        // Make sure we set the array, not the object
+        // we set the array, not the object
         setAllHoldings(res.data.holdings || []);
       })
       .catch((err) => {
